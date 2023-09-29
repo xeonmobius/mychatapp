@@ -57,7 +57,7 @@ const Login = () => {
             setPassword("123456");
         }}
       >
-        Login
+        Login as Guest
       </Button>
     </VStack>
   );

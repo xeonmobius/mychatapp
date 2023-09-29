@@ -9,6 +9,7 @@ const userModel = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -16,12 +17,20 @@ const userModel = new mongoose.Schema(
     },
     picture: {
       type: String,
-      required: true,
       default: "https://cdn-icons-png.flaticon.com/512/1144/1144760.png",
     },
   },
   { timestamps: true }
 );
+userModel.methods.matchPassword = async function (enteredPassword: string) {
+  return await Bun.password.verify(enteredPassword, this.password);
+};
+userModel.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
+  }
+  this.password = await Bun.password.hash(this.password);
+});
 
 const Users = mongoose.model("User", userModel);
 
